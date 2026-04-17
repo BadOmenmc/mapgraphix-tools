@@ -81,12 +81,13 @@
 
 🚚 Truck & Trailer #: ${get(5)} - ${get(6)}
 
-PU: IN ${get(13)} - OUT ${get(14)}
-DEL: IN ${get(15)} - OUT ${get(16)}
+PU: IN ${get(14)} - OUT ${get(15)}
+DEL: IN ${get(18)} - OUT ${get(19)}
 
 📌 Last Location: ${get(20)}
+📌 Last Tracked: ${get(21)}
 
-📦 **Status: ${get(5)}**
+📦 **Status: ${get(3)}**
 
 ---`;
 
