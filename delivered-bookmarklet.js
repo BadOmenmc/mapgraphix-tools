@@ -1,19 +1,40 @@
 (function () {
 
-  alert("SCRIPT CARGADO");
+  // 🧼 evitar duplicados
+  const old = document.getElementById("tool-box");
+  if (old) old.remove();
 
-  const input = window.prompt("Pega la lista de cargas (una por línea):");
-  if (!input) return;
+  // 📦 contenedor
+  const box = document.createElement("div");
+  box.id = "tool-box";
+  box.style = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 300px;
+    background: #1e1e1e;
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    z-index: 99999;
+    font-family: sans-serif;
+  `;
 
-  const userLoads = input.split('\n').map(x => x.trim()).filter(x => x);
+  box.innerHTML = `
+    <h4>Load Tool</h4>
+    <textarea id="loads-input" placeholder="Pega cargas aquí..." style="width:100%;height:100px;"></textarea>
+    <button id="run-btn" style="margin-top:10px;width:100%;">Procesar</button>
+  `;
 
-  const checkTable = setInterval(() => {
+  document.body.appendChild(box);
+
+  document.getElementById("run-btn").onclick = () => {
+
+    const input = document.getElementById("loads-input").value;
+
+    const userLoads = input.split('\n').map(x => x.trim()).filter(x => x);
 
     const rows = document.querySelectorAll('#orderSummaryDataTable_wrapper table tbody tr');
-
-    if (rows.length === 0) return;
-
-    clearInterval(checkTable);
 
     const results = [];
     const get = (tds, i) => tds[i]?.innerText.trim() || "-";
@@ -63,15 +84,10 @@ DEL: IN ${delIn} - OUT ${delOut}
 
     const output = results.join('\n\n');
 
-    const temp = document.createElement('textarea');
-    temp.value = output;
-    document.body.appendChild(temp);
-    temp.select();
-    document.execCommand('copy');
-    document.body.removeChild(temp);
+    navigator.clipboard.writeText(output);
 
-    alert(`✅ ${results.length} loads procesados`);
+    alert("✅ Copiado al portapapeles");
 
-  }, 500);
+  };
 
 })();
