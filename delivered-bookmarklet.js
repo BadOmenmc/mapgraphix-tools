@@ -44,14 +44,24 @@
 
     let refIndex = -1;
 
+    console.log("🔍 HEADERS DETECTADOS:");
+
     headers.forEach((th, i) => {
-      if (th.innerText.includes("Reference Number")) {
+
+      // 👇 clave: buscar texto dentro de botón si existe
+      const text = th.innerText.trim();
+
+      console.log(i, text);
+
+      if (text.toLowerCase().includes("reference")) {
         refIndex = i;
       }
     });
 
+    console.log("📌 REF INDEX:", refIndex);
+
     if (refIndex === -1) {
-      alert("❌ No se encontró la columna Reference Number");
+      alert("❌ No se encontró la columna Reference");
       return;
     }
 
@@ -64,11 +74,13 @@
       const tds = row.querySelectorAll('td');
       if (!tds[refIndex]) return;
 
-      const refNumber = tds[refIndex].innerText.replace(/\D/g, '');
+      const refRaw = tds[refIndex].innerText;
+      const refNumber = refRaw.replace(/\D/g, '');
+
+      console.log("ROW REF:", refRaw, "→", refNumber);
 
       if (!userLoads.includes(refNumber)) return;
 
-      // otros datos (estos sí pueden quedarse por índice porque ya los probaste)
       const get = (i) => tds[i]?.innerText.trim() || "-";
 
       const loadBtn = tds[1].querySelector('button');
