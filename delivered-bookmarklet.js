@@ -40,30 +40,32 @@
       .map(x => (x.match(/\d+/) || [])[0])
       .filter(Boolean);
 
-    const rows = document.querySelectorAll('#orderSummaryDataTable_wrapper table tbody tr');
+    const tables = document.querySelectorAll("table");
 
     const results = [];
 
-    rows.forEach(row => {
+    tables.forEach(table => {
 
-      const text = row.innerText;
+      const rows = table.querySelectorAll("tbody tr");
 
-      // 🔍 busca cualquier número largo dentro de la fila
-      const numbers = text.match(/\d{6,}/g) || [];
+      rows.forEach(row => {
 
-      // 🎯 buscar coincidencia con tus loads
-      const match = numbers.find(n => userLoads.includes(n));
+        const cells = row.querySelectorAll("td");
 
-      if (!match) return;
+        cells.forEach(cell => {
 
-      const tds = row.querySelectorAll('td');
-      const get = (i) => tds[i]?.innerText.trim() || "-";
+          const value = cell.innerText.trim();
 
-      const loadBtn = tds[1]?.querySelector('button');
-      const loadNumber = loadBtn ? loadBtn.innerText.trim() : "-";
+          if (userLoads.includes(value)) {
 
-      const block =
-`🔢 Ref: ${match}
+            const tds = row.querySelectorAll("td");
+            const get = (i) => tds[i]?.innerText.trim() || "-";
+
+            const loadBtn = tds[1]?.querySelector('button');
+            const loadNumber = loadBtn ? loadBtn.innerText.trim() : "-";
+
+            const block =
+`🔢 Ref: ${value}
 Load: ${loadNumber}
 📍 ${get(7)} - ${get(8)}
 
@@ -79,7 +81,12 @@ DEL: IN ${get(15)} - OUT ${get(16)}
 📦 Trailer: ${get(3)}
 -----------------------------`;
 
-      results.push(block);
+            results.push(block);
+          }
+
+        });
+
+      });
 
     });
 
