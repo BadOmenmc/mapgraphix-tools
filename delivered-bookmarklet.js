@@ -1,5 +1,9 @@
 (function () {
 
+  // 🧼 evitar duplicados
+  const old = document.getElementById("tool-box");
+  if (old) old.remove();
+
   // 📦 contenedor UI
   const box = document.createElement("div");
   box.id = "tool-box";
@@ -7,40 +11,54 @@
     position: fixed;
     top: 20px;
     right: 20px;
-    width: 300px;
+    width: 320px;
     background: #1e1e1e;
     color: white;
     padding: 15px;
     border-radius: 10px;
     z-index: 99999;
     font-family: sans-serif;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
   `;
 
   box.innerHTML = `
-    <h4>Load Tool</h4>
-    <textarea id="loads-input" placeholder="Pega cargas aquí..." style="width:100%;height:100px;"></textarea>
-    <button id="run-btn" style="margin-top:10px;width:100%;">Procesar</button>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h4 style="margin:0;">Load Tool</h4>
+      <button id="close-btn" style="background:red;color:white;border:none;border-radius:5px;width:25px;height:25px;cursor:pointer;">X</button>
+    </div>
+
+    <textarea id="loads-input" placeholder="Pega cargas aquí..." 
+      style="width:100%;height:100px;margin-top:10px;"></textarea>
+
+    <button id="run-btn" 
+      style="margin-top:10px;width:100%;padding:8px;background:#4CAF50;border:none;color:white;border-radius:5px;cursor:pointer;">
+      Procesar
+    </button>
   `;
 
   document.body.appendChild(box);
+
+  // ❌ cerrar panel
+  document.getElementById("close-btn").onclick = () => {
+    box.remove();
+  };
 
   document.getElementById("run-btn").onclick = () => {
 
     const input = document.getElementById("loads-input").value;
 
-    // 🔢 Extraer solo números (Reference)
+    // 🔢 extraer números del input
     const userLoads = input
       .split('\n')
       .map(x => {
         const match = x.match(/\d+/);
-        return match ? match[0] : null;
+        return match ? match[0].trim() : null;
       })
       .filter(x => x);
 
     const rows = document.querySelectorAll('#orderSummaryDataTable_wrapper table tbody tr');
 
     const results = [];
-
     const get = (tds, i) => tds[i]?.innerText.trim() || "-";
 
     rows.forEach(row => {
@@ -48,12 +66,12 @@
       const tds = row.querySelectorAll('td');
       if (tds.length < 23) return;
 
-      // 🔢 Reference Number
-      const refNumber = get(tds, 21);
+      // 🔢 Reference limpio (solo números)
+      const refNumber = get(tds, 21).replace(/\D/g, '');
 
       if (!refNumber || !userLoads.includes(refNumber)) return;
 
-      // (Opcional) también capturamos Load #
+      // 🔢 Order #
       const loadBtn = tds[1].querySelector('button');
       const loadNumber = loadBtn ? loadBtn.innerText.trim() : "-";
 
@@ -71,7 +89,6 @@
       const truck = get(tds, 2);
       const trailer = get(tds, 3);
 
-      // 🧾 FORMATO FINAL
       const block =
 `🔢 Ref: ${refNumber}
 Load: ${loadNumber}
