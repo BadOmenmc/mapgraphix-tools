@@ -2,7 +2,7 @@
 
   alert("SCRIPT CARGADO");
 
-  const input = prompt("Pega la lista de cargas (una por línea):");
+  const input = window.prompt("Pega la lista de cargas (una por línea):");
   if (!input) return;
 
   const userLoads = input.split('\n').map(x => x.trim()).filter(x => x);
