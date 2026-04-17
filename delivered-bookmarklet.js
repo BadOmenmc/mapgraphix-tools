@@ -1,10 +1,6 @@
 (function () {
 
-  // 🧼 evitar duplicados
-  const old = document.getElementById("tool-box");
-  if (old) old.remove();
-
-  // 📦 contenedor
+  // 📦 contenedor UI
   const box = document.createElement("div");
   box.id = "tool-box";
   box.style = `
@@ -32,23 +28,36 @@
 
     const input = document.getElementById("loads-input").value;
 
-    const userLoads = input.split('\n').map(x => x.trim()).filter(x => x);
+    // 🔢 Extraer solo números (Reference)
+    const userLoads = input
+      .split('\n')
+      .map(x => {
+        const match = x.match(/\d+/);
+        return match ? match[0] : null;
+      })
+      .filter(x => x);
 
     const rows = document.querySelectorAll('#orderSummaryDataTable_wrapper table tbody tr');
 
     const results = [];
+
     const get = (tds, i) => tds[i]?.innerText.trim() || "-";
 
     rows.forEach(row => {
+
       const tds = row.querySelectorAll('td');
       if (tds.length < 23) return;
 
+      // 🔢 Reference Number
+      const refNumber = get(tds, 21);
+
+      if (!refNumber || !userLoads.includes(refNumber)) return;
+
+      // (Opcional) también capturamos Load #
       const loadBtn = tds[1].querySelector('button');
-      const loadNumber = loadBtn ? loadBtn.innerText.trim() : null;
+      const loadNumber = loadBtn ? loadBtn.innerText.trim() : "-";
 
-      if (!loadNumber || !userLoads.includes(loadNumber)) return;
-
-      const ref = get(tds, 21);
+      // 📦 DATA
       const origin = get(tds, 7);
       const destination = get(tds, 8);
       const transitStatus = get(tds, 5);
@@ -62,9 +71,10 @@
       const truck = get(tds, 2);
       const trailer = get(tds, 3);
 
+      // 🧾 FORMATO FINAL
       const block =
-`🔢 ${loadNumber}
-Ref: ${ref}
+`🔢 Ref: ${refNumber}
+Load: ${loadNumber}
 📍 ${origin} - ${destination}
 
 🚚 ${transitStatus} - ${orderStatus}
@@ -80,13 +90,14 @@ DEL: IN ${delIn} - OUT ${delOut}
 -----------------------------`;
 
       results.push(block);
+
     });
 
     const output = results.join('\n\n');
 
     navigator.clipboard.writeText(output);
 
-    alert("✅ Copiado al portapapeles");
+    alert(`✅ ${results.length} loads encontrados y copiados`);
 
   };
 
