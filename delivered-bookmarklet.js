@@ -73,7 +73,7 @@
           const originalInput = userLoadsRaw.find(l => l.includes(ref)) || ref;
 
           const block =
-`### ${originalInput}
+`## ${originalInput}
 
 **Order#:** ${orderNumber}
 
