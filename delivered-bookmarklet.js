@@ -40,72 +40,43 @@
       .map(x => (x.match(/\d+/) || [])[0])
       .filter(Boolean);
 
-    // 🧠 MAPEAR HEADERS → ÍNDICES
-    const headers = document.querySelectorAll('#orderSummaryDataTable_wrapper th');
-
-    const columnMap = {};
-
-    headers.forEach((th, i) => {
-      const text = th.innerText.trim().toLowerCase();
-
-      if (text.includes("reference")) columnMap.ref = i;
-      if (text.includes("order #")) columnMap.order = i;
-      if (text.includes("orig loc")) columnMap.origin = i;
-      if (text.includes("dest loc")) columnMap.dest = i;
-      if (text.includes("transit status")) columnMap.transit = i;
-      if (text.includes("order status")) columnMap.status = i;
-      if (text.includes("orig arr")) columnMap.puIn = i;
-      if (text.includes("act pu")) columnMap.puOut = i;
-      if (text.includes("dest arr")) columnMap.delIn = i;
-      if (text.includes("act del")) columnMap.delOut = i;
-      if (text.includes("last known location")) columnMap.last = i;
-      if (text.includes("driver name")) columnMap.driver = i;
-      if (text.includes("current trk")) columnMap.truck = i;
-      if (text.includes("trailer")) columnMap.trailer = i;
-    });
-
-    console.log("🧠 COLUMN MAP:", columnMap);
-
-    if (columnMap.ref === undefined) {
-      alert("❌ No se encontró Reference Number");
-      return;
-    }
-
     const rows = document.querySelectorAll('#orderSummaryDataTable_wrapper table tbody tr');
 
     const results = [];
 
-    const get = (tds, key) => {
-      const i = columnMap[key];
-      return i !== undefined ? tds[i]?.innerText.trim() || "-" : "-";
-    };
-
     rows.forEach(row => {
 
+      const text = row.innerText;
+
+      // 🔍 busca cualquier número largo dentro de la fila
+      const numbers = text.match(/\d{6,}/g) || [];
+
+      // 🎯 buscar coincidencia con tus loads
+      const match = numbers.find(n => userLoads.includes(n));
+
+      if (!match) return;
+
       const tds = row.querySelectorAll('td');
+      const get = (i) => tds[i]?.innerText.trim() || "-";
 
-      const refNumber = get(tds, "ref").replace(/\D/g, '');
-
-      if (!userLoads.includes(refNumber)) return;
-
-      const loadBtn = tds[columnMap.order]?.querySelector('button');
+      const loadBtn = tds[1]?.querySelector('button');
       const loadNumber = loadBtn ? loadBtn.innerText.trim() : "-";
 
       const block =
-`🔢 Ref: ${refNumber}
+`🔢 Ref: ${match}
 Load: ${loadNumber}
-📍 ${get(tds,"origin")} - ${get(tds,"dest")}
+📍 ${get(7)} - ${get(8)}
 
-🚚 ${get(tds,"transit")} - ${get(tds,"status")}
+🚚 ${get(5)} - ${get(6)}
 
-PU: IN ${get(tds,"puIn")} - OUT ${get(tds,"puOut")}
-DEL: IN ${get(tds,"delIn")} - OUT ${get(tds,"delOut")}
+PU: IN ${get(13)} - OUT ${get(14)}
+DEL: IN ${get(15)} - OUT ${get(16)}
 
-📌 Last: ${get(tds,"last")}
+📌 Last: ${get(20)}
 
-👤 Driver: ${get(tds,"driver")}
-🚛 Truck: ${get(tds,"truck")}
-📦 Trailer: ${get(tds,"trailer")}
+👤 Driver: ${get(22)}
+🚛 Truck: ${get(2)}
+📦 Trailer: ${get(3)}
 -----------------------------`;
 
       results.push(block);
