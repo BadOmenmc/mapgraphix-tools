@@ -1,4 +1,5 @@
 (function () {
+alert("SCRIPT CARGADO");
 
   const input = prompt("Pega la lista de cargas (una por línea):");
   if (!input) return;
