@@ -9,7 +9,7 @@
     position: fixed;
     top: 20px;
     right: 20px;
-    width: 340px;
+    width: 360px;
     background: #1e1e1e;
     color: white;
     padding: 15px;
@@ -39,10 +39,12 @@
 
     const input = document.getElementById("loads-input").value;
 
-    const userLoads = input
-      .split('\n')
-      .map(x => (x.match(/\d+/) || [])[0])
-      .filter(Boolean);
+    const userLoadsRaw = input.split('\n').filter(Boolean);
+
+    const userLoads = userLoadsRaw.map(line => {
+      const match = line.match(/\d{6,}/);
+      return match ? match[0] : null;
+    }).filter(Boolean);
 
     const tables = document.querySelectorAll("table");
 
@@ -58,20 +60,22 @@
 
         cells.forEach(cell => {
 
-          const value = cell.innerText.trim();
+          const ref = cell.innerText.trim();
 
-          if (!userLoads.includes(value)) return;
+          if (!userLoads.includes(ref)) return;
 
           const tds = row.querySelectorAll("td");
           const get = (i) => tds[i]?.innerText.trim() || "-";
 
           const loadBtn = tds[1]?.querySelector('button');
-          const loadNumber = loadBtn ? loadBtn.innerText.trim() : "-";
+          const orderNumber = loadBtn ? loadBtn.innerText.trim() : "-";
+
+          const originalInput = userLoadsRaw.find(l => l.includes(ref)) || ref;
 
           const block =
-`#### ${value}
+`### ${originalInput}
 
-**Order#:** ${loadNumber}
+**Order#:** ${orderNumber}
 
 👤 Driver Info: ${get(7)} - ${get(8)}
 
@@ -82,7 +86,7 @@ DEL: IN ${get(15)} - OUT ${get(16)}
 
 📌 Last Location: ${get(20)}
 
-📦 **Status: ${get(6)}**
+📦 **Status: ${get(5)}**
 
 ---`;
 
