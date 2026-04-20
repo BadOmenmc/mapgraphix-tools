@@ -81,6 +81,9 @@
 
 🚚 Truck & Trailer #: ${get(5)} - ${get(6)}
 
+🪟 PU IN ${get(12)} - OUT ${get(13)}
+🪟 DEL IN ${get(16)} - OUT ${get(17)}   
+
 PU: IN ${get(14)} - OUT ${get(15)}
 DEL: IN ${get(18)} - OUT ${get(19)}
 
