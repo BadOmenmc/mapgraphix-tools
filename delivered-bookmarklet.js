@@ -26,8 +26,12 @@
 
     <textarea id="loads-input" style="width:100%;height:120px;margin-top:10px;"></textarea>
 
-    <button id="run-btn" style="margin-top:10px;width:100%;padding:8px;background:#4CAF50;border:none;color:white;border-radius:5px;cursor:pointer;">
-      Procesar
+    <button id="full-btn" style="margin-top:10px;width:100%;padding:8px;background:#4CAF50;border:none;color:white;border-radius:5px;cursor:pointer;">
+      FULL INFO
+    </button>
+
+    <button id="follow-btn" style="margin-top:8px;width:100%;padding:8px;background:#2196F3;border:none;color:white;border-radius:5px;cursor:pointer;">
+      FOLLOW UP
     </button>
   `;
 
@@ -35,7 +39,7 @@
 
   document.getElementById("close-btn").onclick = () => box.remove();
 
-  document.getElementById("run-btn").onclick = () => {
+  const process = (mode) => {
 
     const input = document.getElementById("loads-input").value;
 
@@ -72,7 +76,14 @@
 
           const originalInput = userLoadsRaw.find(l => l.includes(ref)) || ref;
 
-          const block =
+          const status = get(3);
+          const delOut = get(19);
+
+          let block = "";
+
+          // 🟢 FULL MODE
+          if (mode === "full") {
+            block =
 `## ${originalInput}
 
 **Order#:** ${orderNumber}
@@ -81,18 +92,27 @@
 
 🚚 Truck & Trailer #: ${get(5)} - ${get(6)}
 
-🪟 PU IN ${get(12)} - OUT ${get(13)}
-🪟 DEL IN ${get(16)} - OUT ${get(17)}   
-
 PU: IN ${get(14)} - OUT ${get(15)}
 DEL: IN ${get(18)} - OUT ${get(19)}
 
 📌 Last Location: ${get(20)}
 📌 Last Tracked: ${get(21)}
 
-📦 **Status: ${get(3)}**
+📦 **Status: ${status}**
 
 ---`;
+          }
+
+          // 🔵 FOLLOW MODE
+          if (mode === "follow") {
+            block =
+`### ${originalInput}
+
+📦 ${status}
+🕒 ${delOut}
+
+---`;
+          }
 
           results.push(block);
 
@@ -104,8 +124,11 @@ DEL: IN ${get(18)} - OUT ${get(19)}
 
     navigator.clipboard.writeText(results.join('\n\n'));
 
-    alert(`✅ ${results.length} loads encontrados y copiados`);
+    alert(`✅ ${results.length} loads procesados`);
 
   };
+
+  document.getElementById("full-btn").onclick = () => process("full");
+  document.getElementById("follow-btn").onclick = () => process("follow");
 
 })();
