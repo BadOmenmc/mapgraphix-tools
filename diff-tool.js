@@ -20,7 +20,7 @@
 
   box.innerHTML = `
     <div style="display:flex; justify-content:space-between;">
-      <h4 style="margin:0;">Load DIFF Tool</h4>
+      <h4 style="margin:0;">MGX DIFF</h4>
       <button id="close-btn" style="background:red;color:white;border:none;width:25px;height:25px;">X</button>
     </div>
 
