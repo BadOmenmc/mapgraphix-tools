@@ -31,7 +31,7 @@
     </button>
 
     <button id="follow-btn" style="margin-top:8px;width:100%;padding:8px;background:#2196F3;border:none;color:white;border-radius:5px;cursor:pointer;">
-      FOLLOW (PRIORITY)
+      FOLLOW (FAST)
     </button>
   `;
 
@@ -77,11 +77,12 @@
           const originalInput = userLoadsRaw.find(l => l.includes(ref)) || ref;
 
           const status = get(3);
+          const puOut = get(15);
           const delOut = get(19);
 
           let block = "";
 
-          // 🟢 FULL MODE (NOTION TOGGLE READY)
+          // 🟢 FULL MODE (NOTION READY)
           if (mode === "full") {
             block =
 `> ### ${originalInput}
@@ -106,33 +107,12 @@ DEL: IN ${get(18)} - OUT ${get(19)}
 ---`;
           }
 
-          // 🔵 FOLLOW MODE (SMART PRIORITY)
+          // 🔵 FOLLOW MODE (MINIMAL + FAST)
           if (mode === "follow") {
-
-            const now = new Date();
-            let urgency = "⚪";
-            let parsedDate = null;
-
-            if (delOut && delOut !== "-") {
-              const clean = delOut.replace(" CDT", "").replace(" ", "T");
-              parsedDate = new Date(clean);
-            }
-
-            if (!parsedDate || isNaN(parsedDate)) {
-              urgency = "🔴";
-            } else {
-              const diff = (parsedDate - now) / (1000 * 60 * 60);
-
-              if (diff <= 0) urgency = "🔴";
-              else if (diff <= 2) urgency = "🟠";
-              else if (diff <= 4) urgency = "🟡";
-              else urgency = "🟢";
-            }
-
             block =
-`${urgency} ${originalInput}
+`${originalInput}
 📦 ${status}
-🕒 DEL ${delOut}
+🕒 PU ${puOut} | DEL ${delOut}
 
 ---`;
           }
@@ -144,17 +124,6 @@ DEL: IN ${get(18)} - OUT ${get(19)}
       });
 
     });
-
-    // 🔥 ORDENAR POR PRIORIDAD EN FOLLOW
-    if (mode === "follow") {
-      const order = { "🔴": 1, "🟠": 2, "🟡": 3, "🟢": 4, "⚪": 5 };
-
-      results.sort((a, b) => {
-        const aKey = order[a[0]] || 99;
-        const bKey = order[b[0]] || 99;
-        return aKey - bKey;
-      });
-    }
 
     navigator.clipboard.writeText(results.join('\n\n'));
 
