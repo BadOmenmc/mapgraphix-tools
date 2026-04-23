@@ -84,7 +84,7 @@
 // 🟢 FULL MODE
 if (mode === "full") {
   block =
-`> #### ${originalInput}
+`> ### ${originalInput}
 
 **Order#:** ${orderNumber}
 
@@ -109,7 +109,7 @@ DEL: IN ${get(18)} - OUT ${get(19)}
           // 🔵 FOLLOW MODE
           if (mode === "follow") {
             block =
-`#### ${originalInput}
+`### ${originalInput}
 
 📦 ${status}
 🕒 ${delOut}
