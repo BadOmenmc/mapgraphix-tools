@@ -20,7 +20,7 @@
 
   box.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center;">
-      <h4 style="margin:0;">Load Tool</h4>
+      <h4 style="margin:0;">MGX Load Tool</h4>
       <button id="close-btn" style="background:red;color:white;border:none;width:25px;height:25px;cursor:pointer;">X</button>
     </div>
 
@@ -31,7 +31,7 @@
     </button>
 
     <button id="follow-btn" style="margin-top:8px;width:100%;padding:8px;background:#2196F3;border:none;color:white;border-radius:5px;cursor:pointer;">
-      FOLLOW UP
+      FOLLOW (PRIORITY)
     </button>
   `;
 
@@ -81,9 +81,9 @@
 
           let block = "";
 
-// 🟢 FULL MODE
-if (mode === "full") {
-  block =
+          // 🟢 FULL MODE (NOTION TOGGLE READY)
+          if (mode === "full") {
+            block =
 `> ### ${originalInput}
 
 **Order#:** ${orderNumber}
@@ -92,8 +92,8 @@ if (mode === "full") {
 
 🚚 Truck & Trailer #: ${get(5)} - ${get(6)}
 
-🪟PU WINDOW: IN ${get(12)} - OUT ${get(13)}
-🪟DEL WINDOW: IN ${get(16)} - OUT ${get(17)}
+🪟 PU WINDOW: IN ${get(12)} - OUT ${get(13)}
+🪟 DEL WINDOW: IN ${get(16)} - OUT ${get(17)}
 
 PU: IN ${get(14)} - OUT ${get(15)}
 DEL: IN ${get(18)} - OUT ${get(19)}
@@ -104,15 +104,35 @@ DEL: IN ${get(18)} - OUT ${get(19)}
 📦 **Status: ${status}**
 
 ---`;
-}
+          }
 
-          // 🔵 FOLLOW MODE
+          // 🔵 FOLLOW MODE (SMART PRIORITY)
           if (mode === "follow") {
-            block =
-`### ${originalInput}
 
+            const now = new Date();
+            let urgency = "⚪";
+            let parsedDate = null;
+
+            if (delOut && delOut !== "-") {
+              const clean = delOut.replace(" CDT", "").replace(" ", "T");
+              parsedDate = new Date(clean);
+            }
+
+            if (!parsedDate || isNaN(parsedDate)) {
+              urgency = "🔴";
+            } else {
+              const diff = (parsedDate - now) / (1000 * 60 * 60);
+
+              if (diff <= 0) urgency = "🔴";
+              else if (diff <= 2) urgency = "🟠";
+              else if (diff <= 4) urgency = "🟡";
+              else urgency = "🟢";
+            }
+
+            block =
+`${urgency} ${originalInput}
 📦 ${status}
-🕒 ${delOut}
+🕒 DEL ${delOut}
 
 ---`;
           }
@@ -124,6 +144,17 @@ DEL: IN ${get(18)} - OUT ${get(19)}
       });
 
     });
+
+    // 🔥 ORDENAR POR PRIORIDAD EN FOLLOW
+    if (mode === "follow") {
+      const order = { "🔴": 1, "🟠": 2, "🟡": 3, "🟢": 4, "⚪": 5 };
+
+      results.sort((a, b) => {
+        const aKey = order[a[0]] || 99;
+        const bKey = order[b[0]] || 99;
+        return aKey - bKey;
+      });
+    }
 
     navigator.clipboard.writeText(results.join('\n\n'));
 
