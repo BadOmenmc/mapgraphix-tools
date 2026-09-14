@@ -112,7 +112,6 @@ DEL: IN ${get(18)} - OUT ${get(19)}
             block =
 `${originalInput}
 📦 ${status}
-🕒 PU ${puOut} | DEL ${delOut}
 
 ---`;
           }
